@@ -31,7 +31,7 @@ resource "aws_instance" "ubuntu_instances" {
 ```
 
 
-As I changed the same terraform file to create 10 new instances, it destroyed (terraform language for deletion) the previous machine and provisioned 10 new machines:
+As I changed the same terraform file to create 10 new instances, it destroyed (terraform's language for deletion ) the previous machine and provisioned 10 new machines:
 
 <img width="1882" height="560" alt="Image" src="https://github.com/user-attachments/assets/eb215473-fe44-4b34-af2e-aa5a45249ca3" />
 
