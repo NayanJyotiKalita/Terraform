@@ -262,6 +262,14 @@ Observations:
 
 ---
 
+<img width="710" height="138" alt="image" src="https://github.com/user-attachments/assets/85bde32f-ea20-4d75-b553-e321108abbe7" />
+
+---
+
+<img width="1111" height="44" alt="image" src="https://github.com/user-attachments/assets/4b0fafc6-6e3a-4b8f-b279-72fa917046d3" />
+
+---
+
 ## Step-9: Access Application
 
 ```
@@ -296,8 +304,17 @@ rm -rf terraform.tfstate*
 
 ---
 
+<img width="815" height="353" alt="image" src="https://github.com/user-attachments/assets/aec9d8fe-cdda-479e-aec0-94a77c5af1f5" />
 
+---
 
+<img width="1082" height="48" alt="image" src="https://github.com/user-attachments/assets/a2816ee9-6023-489b-9037-b446e7846b69" />
+
+---
+
+<img width="825" height="158" alt="image" src="https://github.com/user-attachments/assets/a9bfd1c9-9e50-4861-947a-707f58a21d7c" />
+
+---
 
 
 
