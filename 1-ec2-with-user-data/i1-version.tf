@@ -2,7 +2,7 @@ terraform {
   required_version = "~> 1.15.0"
   required_providers {
     aws-iac = {
-      source = "hashicorp.com/aws"
+      source = "hashicorp/aws"
       version = "~> 5.92"
     }
   }
@@ -10,7 +10,7 @@ terraform {
 
 provider "aws-iac" {
   region = "us-west-2"
-  profile = default
+  profile = "default"
 }
 
 
