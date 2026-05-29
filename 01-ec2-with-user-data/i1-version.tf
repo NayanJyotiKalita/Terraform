@@ -2,15 +2,15 @@ terraform {
   required_version = "~> 1.15.0"
   required_providers {
     aws-iac = {
-      source = "hashicorp/aws"
-      version = "~> 5.92"
+      source       = "hashicorp/aws"
+      version      = "~> 5.92"
     }
   }
 }
 
 provider "aws-iac" {
-  region = "us-west-2"
-  profile = "default"
+  region    = "us-west-2"
+  profile   = "default"
 }
 
 
@@ -20,7 +20,7 @@ $HOME/.aws/credentials
 
 else if you need to use a different profile, follow below
 provider "aws" {
-  region = "us-east-1"
-  profile = "<profilename>" #profilename to be picked from $HOME/.aws/credentials file 
+  region   = "us-east-1"
+  profile  = "<profilename>" #profilename to be picked from $HOME/.aws/credentials file 
 }
 */
