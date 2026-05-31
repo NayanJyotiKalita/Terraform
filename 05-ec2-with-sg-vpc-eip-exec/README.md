@@ -2,11 +2,11 @@
 
 ## Concepts Used - NAT Gateway, Elastic IP, Bastion Host, Secure Private Instances, Null Resources - File/Remote-Exec/Local-Exec Provisioners
 
-In this module, we are going a few more steps ahead by trying to create three VPC Architecture along with launching public and private instances with elastic ips attached to the public instance and making the public instance as a bastion host for the private instances to connect to the internet securely
+In this module, we are going a few more steps ahead by trying to create three VPC Architecture along with launching public and private instances with elastic ips attached to the public instance and making the public instance as a bastion host for the private instances to connect to the internet securely </br>
 
-You are check out the files, I am going to mention here the new files added on top of the previous modueles and the changes that I have tried.
+You can check out the files, I am going to mention here the new files added on top of the previous modueles and the changes that I have tried. </br>
 
-In the `vpc-variables` file, we have changed the configuration to setup only one one NAT Gateway in the entire VPC using the following configuration:
+In the `vpc-variables` file, we have changed the configuration to setup only one one NAT Gateway in the entire VPC using the following configuration: </br>
 
 ```hcl
 # VPC Enable NAT Gateway (True or False) 
@@ -31,9 +31,11 @@ variable "vpc_one_nat_gateway_per_az" {
 }
 ```
 
-We have added three files for the security groups as we are using modules for creating security groups:
+---
 
-One Security Group for the bastion host i.e. the public instance:
+We have added three files for the security groups as we are using modules for creating security groups: </br>
+
+One Security Group for the bastion host i.e. the public instance: </br>
 
 ```hcl
 module "public_bastion_sg" {
@@ -55,6 +57,8 @@ module "public_bastion_sg" {
 
 }
 ```
+
+---
 
 Another Security Group for the private instance which will be hosting the web server:
 
@@ -78,6 +82,8 @@ module "private_sg" {
 }
 ```
 
+---
+
 There is another output file for the security groups, you can check it our here: [i5-03-sg-outputs.tf](/05-ec2-with-sg-vpc-eip-exec/i5-03-sg-outputs.tf)
 
 The output file is written basically to give us the Security Group IDs, VPC IDs, Securtiy Group Names and the Security Group Owner IDs of the both the Security Groups that we created
@@ -92,6 +98,8 @@ variable "private_instance_count" {
   default = 1
 }
 ```
+
+---
 
 Then we added a few output blocks in the ou
 
@@ -120,7 +128,7 @@ Then we added a few output blocks in the ou
 
 
 
-
+---
 
 
 ```
