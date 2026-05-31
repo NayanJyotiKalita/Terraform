@@ -1,3 +1,7 @@
+# Provisioning Public (Bastion Host) and Private Instances in a Three-Tier VPC Architecture
+
+## Concepts Used - NAT Gateway, Elastic IP, Bastion Host, Secure Private Instances, Null Resources - File/Remote-Exec/Local-Exec Provisioners
+
 In this module, we are going a few more steps ahead by trying to create three VPC Architecture along with launching public and private instances with elastic ips attached to the public instance and making the public instance as a bastion host for the private instances to connect to the internet securely
 
 You are check out the files, I am going to mention here the new files added on top of the previous modueles and the changes that I have tried.
