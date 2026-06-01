@@ -4,7 +4,7 @@
 
 In this module, we are going a few more steps ahead by trying to create three VPC Architecture along with launching public and private instances with elastic ips attached to the public instance and making the public instance as a bastion host for the private instances to connect to the internet securely </br>
 
-You can check out the files, I am going to mention here the new files added on top of the previous modueles and the changes that I have tried. </br>
+You can check out the files here: [/05-ec2-with-sg-vpc-eip-exec](/05-ec2-with-sg-vpc-eip-exec) but I am going to mention here the new files added on top of the previous modueles and the changes that I have tried. </br>
 
 In the `vpc-variables` file, we have changed the configuration to setup only one one NAT Gateway in the entire VPC using the following configuration: </br>
 
@@ -33,21 +33,24 @@ variable "vpc_one_nat_gateway_per_az" {
 
 ---
 
+## Security Groups
+
 We have added three files for the security groups as we are using modules for creating security groups: </br>
 
-One Security Group for the bastion host i.e. the public instance: </br>
+### One Security Group for the bastion host i.e. the public instance: </br>
 
+`i5-01-sg-bastionsg.tf` - This file defines the inbound and outbound permissions given to the public instance(s) 
 ```hcl
 module "public_bastion_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.3.1"
+  source                   = "terraform-aws-modules/security-group/aws"
+  version                  = "5.3.1"
 
-  name          = "public-bastion-security-group"
-  description   = "Security Group with SSH port open for everybody (IPv4 CIDR), egress ports are all world open"
-  vpc_id        = module.vpc.vpc_id 
+  name                     = "public-bastion-security-group"
+  description              = "Security Group with SSH port open for everybody (IPv4 CIDR), egress ports are all world open"
+  vpc_id                   = module.vpc.vpc_id 
 
-  # Ingress Rules & CIDR Blocks
-  ingress_rules            = ["ssh-tcp"]
+  # Ingress Rules & CIDR Blocks  --> Modules have have way of defining the below parameters
+  ingress_rules            = ["ssh-tcp"]    # We need only the ssh traffic to come through it because we will use our public instance as a platform to connect to the private instance
   ingress_cidr_blocks      = ["0.0.0.0/0"]
   
   # Egress Rule - all-all open
@@ -58,22 +61,21 @@ module "public_bastion_sg" {
 }
 ```
 
----
+### Another Security Group for the private instance which will be hosting the web server:
 
-Another Security Group for the private instance which will be hosting the web server:
-
+`i5-01-sg-prviatesg.tf` - This file defines the inbound and outbound permissions given to the instance(s) 
 ```hcl
 module "private_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.3.1"
+  source                   = "terraform-aws-modules/security-group/aws"
+  version                  = "5.3.1"
 
-  name          = "private-security-group"
-  description   = "Security Group with HTTP & SSH port open for the VPC i.e the internal traffic, egress ports are all world open"
-  vpc_id        = module.vpc.vpc_id 
+  name                     = "private-security-group"
+  description              = "Security Group with HTTP & SSH port open for the VPC i.e the internal traffic, egress ports are all world open"
+  vpc_id                   = module.vpc.vpc_id 
 
   # Ingress Rules & CIDR Blocks for ssh and http for internal traffic
-  ingress_rules            = ["ssh-tcp", "http-80-tcp"]
-  ingress_cidr_blocks      = [module.vpc.vpc_cidr_block]
+  ingress_rules            = ["ssh-tcp", "http-80-tcp"]    # Here we need these two rules as we need to enter the private instance via ssh from the public instance and the http 80 rule to access our web server
+  ingress_cidr_blocks      = [module.vpc.vpc_cidr_block]     # This defines that the traffic can come only within the vpc, not from the outside world, enhancing the security
 
   # Egress Rule - all-all open
   egress_rules             = ["all-all"]
@@ -88,7 +90,11 @@ There is another output file for the security groups, you can check it our here:
 
 The output file is written basically to give us the Security Group IDs, VPC IDs, Securtiy Group Names and the Security Group Owner IDs of the both the Security Groups that we created
 
-Then, in our vaiables file for the instances, we added:
+---
+
+## EC2 Instances
+
+### In our vaiables file for the instances, we added:
 
 ```hcl
 # AWS EC2 Private Instance Count
@@ -99,24 +105,90 @@ variable "private_instance_count" {
 }
 ```
 
+### Our ec2 module for the public/bastion instance:
+
+`i7-03-ec2-bastion.tf`
+```hcl
+# AWS EC2 Instance Terraform Module
+# Bastion Host - EC2 Instance that will be created in VPC Public Subnet
+module "ec2_bastion" {
+  source                 = "terraform-aws-modules/ec2-instance/aws"
+  version                = "6.4.0"
+
+  name                   = "${var.environment}-BastionHost"
+
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = var.instance_type
+  key_name               = var.keypair 
+  subnet_id              = module.vpc.public_subnets[0]
+  vpc_security_group_ids = [module.public_bastion_sg.security_group_id]
+  tags                   = local.common_tags
+}
+```
+
+### Our ec2 module for the private instance:
+
+`i7-04-ec2-private.tf`
+```hcl
+# AWS EC2 Instance Terraform Module
+# Bastion Host - EC2 Instance that will be created in VPC Private Subnet
+module "ec2_private" {
+  depends_on = [ module.vpc ]
+  source     = "terraform-aws-modules/ec2-instance/aws"
+  version    = "6.4.0"
+
+  name                   = "${var.environment}-private"
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = var.instance_type
+  key_name               = var.keypair 
+  user_data              = file("${path.module}/app-install.sh")
+  tags                   = local.common_tags
+  vpc_security_group_ids = [module.private_sg.security_group_id]
+
+  # instance_count is deprecated
+  # instance_count         = var.private_instance_count
+  # subnet_ids = [module.vpc.private_subnets[0],module.vpc.private_subnets[1] ]
+
+  # We for_each now instead of instance_count
+  for_each               = toset([for i in range(var.private_instance_count) : tostring(i)])
+  subnet_id              = element(module.vpc.private_subnets, tonumber(each.key))
+}
+```
+
+
+```hcl
+# AWS EC2 Instance Terraform Outputs
+
+# Public EC2 Instances - Bastion Host
+## ec2_bastion_public_instance_ids
+output "ec2_bastion_instance_id" {
+  description = "The ID of the public/bastion instance"
+  value       = module.ec2_bastion.id
+}
+
+## ec2_bastion_public_ip
+output "ec2_bastion_public_ip" {
+  description = "The public IP address assigned to the instance, if applicable. NOTE: If you are using an aws_eip with your instance, you should refer to the EIP's address directly and not use `public_ip` as this field will change after the EIP is attached --> we will check our output and verify this"
+  value       = module.ec2_bastion.public_ip
+}
+
+# Private EC2 Instances
+## ec2_private_instance_ids
+output "ec2_private_instance_ids" {
+  description = "List of IDs of private instances"
+  value       = [for private in module.ec2_private: private.id]
+}
+
+## ec2_private_ip
+output "ec2_private_ip" {
+  description = "List of private IP assigned to the private instances"
+  value       = [for private in module.ec2_private: private.private_ip]
+}
+```
+
 ---
 
-Then we added a few output blocks in the ou
-
-
-
-
-# NEED to add
-
-
-
-
-
-
-
-
-
-
+## Null Resource
 
 
 
