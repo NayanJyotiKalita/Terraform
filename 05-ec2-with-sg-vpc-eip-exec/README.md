@@ -155,7 +155,7 @@ module "ec2_private" {
 }
 ```
 
-
+`i7-02-ec2-outputs.tf`
 ```hcl
 # AWS EC2 Instance Terraform Outputs
 
@@ -188,13 +188,68 @@ output "ec2_private_ip" {
 
 ---
 
-## Null Resource
+## Null Resource - File/Remote-Exec/Local-Exec Provisioners
 
+Our scenario needs us to use the bastion host to have the `.pem` file inside it to connect to the private instance and we don't want to touch the bastion instance via the console, we want to automate it using Terraform and so we use the `Null Resource` block to do the same thing. It establishes the connection with the instance and then using the `file provisioner` it copies the `.pem` file and then using the `remote-exec provisioner` it changes the permission of the `.pem` file. </br>
 
+We also used the `local-exec provisioner` to do something inside our module, we will observe it once we apply our configurations
 
+`i9-nullresource-provisioners.tf`
+```hcl
+# Create a Null Resource and Provisioners
+resource "null_resource" "cluster" {
+  depends_on    = [ module.ec2_bastion ]    # The null resource connection needs to happen with the bastion host and that's why it's important for the bastion host to get created before the Null Resource
+  # Connection Block for Provisioners to connect to EC2 Instance
+  connection {
+    type        = "ssh"
+    host        = aws_eip.public_elastic_ip.public_ip
+    user        = "ec2-user"  # use ubuntu if you are using ubuntu linux for your ami or you can use root if you are using the root user
+    password    = ""
+    private_key = file("oregon-key.pem")
+  }
 
+# File Provisioner: Copies the oregon-key.pem file to /tmp/oregon-key.pem
+  provisioner "file" {
+    source      = "oregon-key.pem"
+    destination = "/tmp/oregon-key.pem"
+  }
 
+# Remote Exec Provisioner: Using remote-exec provisioner fix the private key permissions on Bastion Host
+  provisioner "remote-exec" { 
+    inline      = [
+      "sudo chmod 400 /tmp/oregon-key.pem"
+    ]
+  } 
 
+# Local Exec Provisioner:  local-exec provisioner (Creation-Time Provisioner - Triggered during Create Resource)
+  provisioner "local-exec" {
+    command     = "echo Public EC2 created on `data` and Instance ID: ${module.ec2_bastion.id} >> creation-time-public-ec2-id"
+    working_dir = "local-exec-output-files/"    # We create this dir inside our module and the output will be created inside it
+  }
+}
+```
+
+---
+
+## .auto.tfvars file
+
+This time, along with the `vpc_name`, we changed the subnet ranges to see some proper changes that comes into effect as a result of the `.auto.tfvars` file:
+
+```hcl
+vpc_name                                = "myvpc"
+vpc_cidr_block                          = "10.0.0.0/16"
+vpc_azs                                 = ["us-west-2a", "us-west-2b"]
+vpc_public_subnets                      = ["10.0.101.0/24", "10.0.102.0/24"]
+vpc_private_subnets                     = ["10.0.111.0/24", "10.0.112.0/24"]
+vpc_database_subnets                    = ["10.0.121.0/24", "10.0.122.0/24"]
+vpc_create_database_subnet_group        = true 
+vpc_create_database_subnet_route_table  = true   
+vpc_enable_nat_gateway                  = true  
+vpc_single_nat_gateway                  = true
+vpc_one_nat_gateway_per_az              = true
+```
+
+---
 
 
 
