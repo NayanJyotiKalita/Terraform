@@ -345,6 +345,7 @@ While the resources were getting provsioned, we saw the below connection getting
 <img width="713" height="233" alt="image" src="https://github.com/user-attachments/assets/a4f63243-f44e-4193-a1e3-644965fc6825" />
 
 ---
+
 Now, using our elasticip/public ip, we connected to the bastion_host/public_instance:
 
 ---
@@ -370,7 +371,49 @@ Now, our web server is installed in our private instance, we need to connect to 
 
 ---
 
+### The _local-exec_ got triggered and gave us the file:
 
+---
+
+<img width="988" height="148" alt="image" src="https://github.com/user-attachments/assets/dfd1fc56-5ed8-4c3d-be00-fd50c27acdea" />
+
+---
+
+---
+
+## Clean Up
+
+```bash
+terraform destroy
+rm -rf .terraform*
+rm -rf terraform.tfstate*
+```
+
+### One catch, we have our _local-exec-destroy_ which will get triggered during the destruction of the resources once we uncomment it and it redirects the output mentioned in it to the file mentioned
+
+```hcl
+  provisioner "local-exec" {
+  command = "echo Destroy time prov `date` >> destroy-time-provider.txt"
+  working_dir = "local-exec-output-files/"
+  when = destroy
+```
+---
+
+<img width="967" height="117" alt="image" src="https://github.com/user-attachments/assets/342561dc-a9a8-4c48-b2c1-aa98c231d112" />
+
+---
+
+---
+
+# Moving to the next module:
+### Problems:
+  - Our web server is running in a private isolated instance
+  - It cannot be accessed from the outside world
+  - We can only access it by going inside it through our bastion host.
+  - There is no way outside world can access
+
+### Solution 
+  #### Application Load Balancer - to solve this problem, in the next module we will be provisioning Load Balancers
 
 
 
