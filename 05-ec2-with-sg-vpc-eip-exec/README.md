@@ -251,12 +251,18 @@ vpc_one_nat_gateway_per_az              = true
 
 ---
 
+## Init, Plan and Apply
 
-
-
+```bash
+terraform init
+terraform validate
+terraform plan
+terraform apply
+```
 
 ---
 
+### Our Resources created:
 
 ```
 Apply complete! Resources: 46 added, 0 changed, 0 destroyed.
@@ -304,11 +310,7 @@ vpc_cidr_block = "10.0.0.0/16"
 vpc_id = "vpc-09246c56c0091bf7b"
 ```
 
----
-
-<img width="713" height="233" alt="image" src="https://github.com/user-attachments/assets/a4f63243-f44e-4193-a1e3-644965fc6825" />
-
----
+From the above outputs we can observet that `public_ip` of the bastion host is empty which has happened because we provisioned an `elastic_ip` which would override the public_ip of the bastion/public instance. So we need to redirect the output to the ip of the elastic_ip. </br>
 
 We added a new output block:
 
@@ -328,6 +330,21 @@ And now when we plan it, it give us the required output:
 
 ---
 
+This time, we can also observe that only one NAT Gateway got created instead of two because we changed the configuration, also we can see the subnet ranges getting changed from what we initialised to the ones that we mentioned in `.auto.tfvars` files :
+
+---
+
+<img width="1631" height="691" alt="image" src="https://github.com/user-attachments/assets/e0fc91d6-8033-48f4-b2f2-e471ab659acc" />
+
+---
+
+While the resources were getting provsioned, we saw the below connection getting established because of the `Null Resource` block which has helped us to copy the `.pem` file from our local to the bastion host.
+
+---
+
+<img width="713" height="233" alt="image" src="https://github.com/user-attachments/assets/a4f63243-f44e-4193-a1e3-644965fc6825" />
+
+---
 Now, using our elasticip/public ip, we connected to the bastion_host/public_instance:
 
 ---
@@ -352,6 +369,36 @@ Now, our web server is installed in our private instance, we need to connect to 
 <img width="592" height="154" alt="image" src="https://github.com/user-attachments/assets/804a8ff6-a2f1-4fe9-9949-8b614b84b981" />
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
