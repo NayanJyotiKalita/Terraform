@@ -266,6 +266,19 @@ zone_id = "Z1H1FL5HABSF5"
 <img width="1131" height="116" alt="image" src="https://github.com/user-attachments/assets/08b42d5d-50af-4f74-889e-8f744804b2da" />
 
 ---
+
+### We can also see the output coming from the `local-exec provisioner`:
+
+---
+
+<img width="984" height="130" alt="image" src="https://github.com/user-attachments/assets/ec47766c-5964-49c7-96a9-06732e0da101" />
+
+---
+
+In the above picture, we can see there are three instances' details which is because I created and destroyed the resources thrice.
+
+---
+
 ###
 ---
 Right now we have enabled the traffic coming from port 80 from the outside world to access our Load Balancer, we want to configure the traffic coming from, let's say, port 81, let's configure that:
@@ -345,7 +358,13 @@ Applied changes, and now let's try to access using the port 81:
 
 ---
 
+## Cleanup
 
+```bash
+terraform destroy -auto-approve
+rm -rf .terraform*
+rm -rf terraform.tfstate*
+```
 
 
 
