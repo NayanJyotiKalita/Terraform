@@ -12,8 +12,8 @@
   - Bucket settings for Block Public Access: leave to defaults
   - Bucket Versioning: Enable  --> Very Important for the state file
   - Rest all leave to defaults
-  - Click on Create Bucket
-  ** Below steps are optional as the _key_ argument can create it anyways**
+  - Click on Create Bucket </br>
+**Below steps are optional as the _key_ argument can create it anyways**
   - Create Folder
   - Folder Name: dev
   - Click on Create Folder
