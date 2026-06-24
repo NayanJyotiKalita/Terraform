@@ -26,7 +26,7 @@
   - `dynamo-table` argument and any other argument related to dynamo_db for state locking is deprecated
   - `use_lockfile` argument is used now for a single place for storing the state file and the lock
   - If we don't mention the `.tfstate` file in the `key` argument:
-      - `use_lockfile` argument creates a `.lock` file on its own and stores the state and manages the lock
+      - `use_lockfile` argument creates a `.tflock` file on its own and stores the state and manages the lock
 
   - So the backend block becomes:
 
