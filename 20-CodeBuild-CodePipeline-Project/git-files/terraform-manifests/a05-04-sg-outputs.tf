@@ -1,0 +1,76 @@
+# AWS EC2 Security Group Terraform Outputs
+
+# Public Bastion Host Security Group Outputs
+## public_bastion_sg_group_id
+output "public_bastion_sg_group_id" {
+  description = "The ID of the security group"
+  value = module.public_bastion_sg.id
+}
+
+# public_bastion_sg_group_vpc_id
+output "public_bastion_sg_group_vpc_id" {
+  description = "VPC ID"
+  value = module.public_bastion_sg.vpc_id
+}
+
+# public_bastion_sg_group_name
+output "public_bastion_sg_group_name" {
+  description = "The name of the security group"
+  value = module.public_bastion_sg.name
+}
+
+# public_bastion_sg_owner_id
+output "public_bastion_sg_owner_id" {
+  description = "The owner id of the security group"
+  value = module.public_bastion_sg.owner_id
+}
+
+# Private EC2 Instances Security Group Outputs
+## private_bastion_sg_group_id
+output "private_bastion_sg_group_id" {
+  description = "The ID of the security group"
+  value = module.private_sg.id
+}
+
+## private_sg_group_vpc_id
+output "private_sg_group_vpc_id" {
+  description = "VPC ID"
+  value = module.private_sg.vpc_id
+}
+
+## private_sg_group_name
+output "private_sg_group_name" {
+  description = "The name of the security group"
+  value = module.private_sg.name
+}
+
+# priate_sg_owner_id
+output "private_sg_owner_id" {
+  description = "The owner id of the security group"
+  value = module.private_sg.owner_id
+}
+
+# Loadbalancer Security Group Outputs
+## alb_sg_id
+output "alb_sg_group_id" {
+  description = "The ID of the security group"
+  value = module.alb_sg.id
+}
+
+## alb_sg_group_vpc_id
+output "alb_sg_group_vpc_id" {
+  description = "VPC ID"
+  value = module.alb_sg.vpc_id
+}
+
+## alb_sg_group_name
+output "alb_sg_group_name" {
+  description = "The name of the security group"
+  value = module.alb_sg.name
+}
+
+# alb_sg_owner_id
+output "alb_sg_owner_id" {
+  description = "The owner id of the security group"
+  value = module.alb_sg.owner_id
+}

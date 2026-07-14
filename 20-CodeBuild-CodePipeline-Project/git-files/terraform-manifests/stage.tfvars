@@ -1,0 +1,16 @@
+environment                        = "stage"
+vpc_name                           = "myvpc"
+vpc_cidr                           = "10.0.0.0/16"
+vpc_azs                            = [ "us-east-2a", "us-east-2b", "us-east-2c" ]
+public_subnets                     = [ "10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24" ]
+private_subnets                    = [ "10.0.111.0/24", "10.0.112.0/24", "10.0.113.0/24" ]
+database_subnets                   = [ "10.0.121.0/24", "10.0.122.0/24", "10.0.123.0/24" ]
+create_database_subnet_group       = true
+create_database_subnet_route_table = true
+enable_nat_gateway                 = true
+single_nat_gateway                 = true
+one_nat_gateway_per_az             = false
+instance_type                      = "t3.micro"
+key_name                           = "oregon-vn"
+private_instance_count             = 2
+dns_name                           = "stage-iac.vinodnayan.academy"
